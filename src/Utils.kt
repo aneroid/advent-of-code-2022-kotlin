@@ -9,6 +9,15 @@ fun readInput(name: String) = File(
     "..\\_inputs",
     "$name.txt"
 ).readLines()
+
+/**
+ * Reads input as String txt file.
+ */
+fun readInputAsString(name: String) = File(
+    "..\\_inputs",
+    "$name.txt"
+).readText()
+
 /**
  * Converts string to md5 hash.
  */
