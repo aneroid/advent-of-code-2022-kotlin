@@ -1,16 +1,17 @@
-enum class RockPaperScissors(val theirLetter: String, val myLetter: String, val value: Int) {
+enum class RockPaperScissors(val theirLetter: String, val myLetter: String, val choiceScore: Int) {
     ROCK("A", "X", 1),
     PAPER("B", "Y", 2),
     SCISSORS("C", "Z", 3),
     ;
     
-    private fun beats(other: RockPaperScissors) = when (this) {
-        ROCK -> other == SCISSORS
-        PAPER -> other == ROCK
-        SCISSORS -> other == PAPER
-    }
+    private fun beats(other: RockPaperScissors) =
+        when (this) {
+            ROCK -> SCISSORS
+            PAPER -> ROCK
+            SCISSORS -> PAPER
+        } == other
     
-    fun moveScore(other: RockPaperScissors) =
+    fun scoreVersus(other: RockPaperScissors) =
         when {
             beats(other) -> 6
             this == other -> 3
@@ -18,20 +19,19 @@ enum class RockPaperScissors(val theirLetter: String, val myLetter: String, val 
         }
     
     companion object {
-        fun fromString(letter: String) = values().first { it.theirLetter == letter || it.myLetter == letter }
+        fun fromString(letter: String) =
+            values().first { it.theirLetter == letter || it.myLetter == letter }
     }
 }
 
-enum class Goal(val letter: String, val value: Int) {
+enum class Goal(val letter: String, private val moveScore: Int) {
     LOSE("X", 0),
     DRAW("Y", 3),
     WIN("Z", 6),
     ;
     
     fun toRPS(theirs: RockPaperScissors) =
-        RockPaperScissors.values().first { mine ->
-            mine.moveScore(theirs) == this.value
-            }
+        RockPaperScissors.values().first { mine -> mine.scoreVersus(theirs) == moveScore }
     
     companion object {
         fun fromRPS(rps: RockPaperScissors) = values().first { it.letter == rps.myLetter }
@@ -43,7 +43,7 @@ class Day02(input: List<String>) {
     
     private fun List<Pair<RockPaperScissors, RockPaperScissors>>.calculateScore() =
         fold(0) { acc, (theirs, mine) ->
-            acc + mine.moveScore(theirs) + mine.value
+            acc + mine.scoreVersus(theirs) + mine.choiceScore
         }
     
     fun partOne(): Int =
