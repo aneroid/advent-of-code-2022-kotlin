@@ -4,7 +4,7 @@ enum class RockPaperScissors(val theirLetter: String, val myLetter: String, val 
     SCISSORS("C", "Z", 3),
     ;
     
-    fun beats(other: RockPaperScissors) = when (this) {
+    private fun beats(other: RockPaperScissors) = when (this) {
         ROCK -> other == SCISSORS
         PAPER -> other == ROCK
         SCISSORS -> other == PAPER
@@ -30,12 +30,8 @@ enum class Goal(val letter: String, val value: Int) {
     
     fun toRPS(theirs: RockPaperScissors) =
         RockPaperScissors.values().first { mine ->
-            when (this) {
-                LOSE -> theirs.beats(mine)
-                DRAW -> mine == theirs
-                WIN -> mine.beats(theirs)
+            mine.moveScore(theirs) == this.value
             }
-        }
     
     companion object {
         fun fromRPS(rps: RockPaperScissors) = values().first { it.letter == rps.myLetter }
@@ -53,15 +49,9 @@ class Day02(input: List<String>) {
     fun partOne(): Int =
         data.calculateScore()
     
-    fun partTwo(): Int {
-        val newData = data.map { (theirs, mine) ->
-            theirs to Goal.fromRPS(mine)
-        }
-        val newMoves = newData.map { (theirs, goal) ->
-            theirs to goal.toRPS(theirs)
-        }
-        return newMoves.calculateScore()
-    }
+    fun partTwo(): Int =
+        data.map { (theirs, mine) -> theirs to Goal.fromRPS(mine).toRPS(theirs) }
+            .calculateScore()
     
     private companion object {
         fun parseInput(input: List<String>) =
