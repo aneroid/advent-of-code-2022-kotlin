@@ -3,18 +3,16 @@ class Day03(private val input: List<String>) {
     private val priorities = ('a'..'z').zip(1..26).toMap() +
             ('A'..'Z').zip(27..52).toMap()
     
-    fun partOne(): Int {
-        return data.asSequence()
+    fun partOne(): Int =
+        data
+            .asSequence()
             .map { it.first.toSet().intersect(it.second.toSet()).first() }
-            .map { priorities.getValue(it) }
-            .sum()
-        
-    }
+            .sumOf { priorities.getValue(it) }
     
     fun partTwo(): Int =
         input.chunked(3)
-            .map { ls ->
-                ls.map(String::toSet)
+            .map { chunks ->
+                chunks.map(String::toSet)
                     .reduce { acc, set -> acc.intersect(set) }
                     .first()
             }.sumOf { priorities.getValue(it) }
