@@ -1,4 +1,4 @@
-class Day00(input: List<String>) {
+class Day00(private val input: List<String>) {
     private val data = parseInput(input)
     
     fun partOne(): Int {
