@@ -16,10 +16,13 @@ class Day00(private val input: List<String>) {
 
 fun main() {
     val testInput = readInput("Day00_test")
-    check(Day00(testInput).partOne() == 1)
-    // check(Day00(testInput).partTwo() == 1)  // uncomment when ready
-    
     val input = readInput("Day00")
+    
+    // part One
+    check(Day00(testInput).partOne() == 1)
     println("partOne: ${Day00(input).partOne()}\n")
-    println("partTwo: ${Day00(input).partTwo()}\n")
+    
+    // part Two
+    // check(Day00(testInput).partTwo() == 1)  // uncomment when ready
+    // println("partTwo: ${Day00(input).partTwo()}\n")  // uncomment when ready
 }

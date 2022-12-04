@@ -1,7 +1,8 @@
 class Day03(private val input: List<String>) {
-    private val data = parseInput(input)
-    private val priorities = ('a'..'z').zip(1..26).toMap() +
-            ('A'..'Z').zip(27..52).toMap()
+    private val data
+        get() = parseInput(input)
+    
+    private val priorities = (('a'..'z') + ('A'..'Z')).zip(1..52).toMap()
     
     fun partOne(): Int =
         data
@@ -20,10 +21,10 @@ class Day03(private val input: List<String>) {
     private companion object {
         fun parseInput(input: List<String>) =
             input.map {
-                    it.length.let { len ->
-                        it.substring(0, len / 2) to it.substring(len / 2)
-                    }
+                it.length.let { len ->
+                    it.substring(0, len / 2) to it.substring(len / 2)
                 }
+            }
     }
 }
 

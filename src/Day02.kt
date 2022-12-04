@@ -13,10 +13,10 @@ enum class RockPaperScissors(val theirLetter: String, val myLetter: String, val 
     
     fun scoreVersus(other: RockPaperScissors) =
         when {
-            beats(other) -> 6
-            this == other -> 3
-            else -> 0
-        }
+            beats(other) -> Goal.WIN
+            this == other -> Goal.DRAW
+            else -> Goal.LOSE
+        }.moveScore
     
     companion object {
         fun fromString(letter: String) =
@@ -24,7 +24,7 @@ enum class RockPaperScissors(val theirLetter: String, val myLetter: String, val 
     }
 }
 
-enum class Goal(val letter: String, private val moveScore: Int) {
+enum class Goal(val letter: String, val moveScore: Int) {
     LOSE("X", 0),
     DRAW("Y", 3),
     WIN("Z", 6),
