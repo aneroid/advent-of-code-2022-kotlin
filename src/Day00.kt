@@ -18,11 +18,11 @@ fun main() {
     val testInput = readInput("Day00_test")
     val input = readInput("Day00")
     
-    // part One
-    check(Day00(testInput).partOne() == 1)
-    println("partOne: ${Day00(input).partOne()}\n")
+    println("part One:")
+    assertThat(Day00(testInput).partOne()).isEqualTo(1)
+    println("actual: ${Day00(input).partOne()}\n")
     
-    // part Two
-    // check(Day00(testInput).partTwo() == 1)  // uncomment when ready
-    // println("partTwo: ${Day00(input).partTwo()}\n")  // uncomment when ready
+    println("part Two:")
+    // assertThat(Day00(testInput).partTwo()).isEqualTo(1)  // uncomment when ready
+    // println("actual: ${Day00(input).partTwo()}\n")  // uncomment when ready
 }

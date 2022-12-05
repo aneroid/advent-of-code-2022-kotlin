@@ -29,3 +29,18 @@ fun readInputBlocks(name: String) = File(
 fun String.md5() = BigInteger(1, MessageDigest.getInstance("MD5").digest(toByteArray()))
     .toString(16)
     .padStart(32, '0')
+
+/**
+ * Barebones implementation of Google Truth's `assertThat()` and `isEqualTo()`.
+ */
+class Checkable<T>(private val result: T) {
+    fun isEqualTo(expected: T) =
+        check(result == expected) { """
+            
+            expected: $expected
+            but was : $result
+        """.trimIndent()
+        }
+}
+
+fun <T> assertThat(someResult: T): Checkable<T> = Checkable(someResult)
