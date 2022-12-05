@@ -34,26 +34,26 @@ class Day05(input: String) {
         return map { it.last() }.also { println("final stacks: ${it.joinToString("")}") }
     }
     
-    fun partOne(): List<Char> {
-        moves.forEach { move ->
-            stacks[move.toStack].addAll(stacks[move.fromStack].takeLast(move.howMany).reversed())
-            repeat(move.howMany) {
-                stacks[move.fromStack].removeLast()
-            }
+    private fun MutableList<MutableList<Char>>.doMove(move: Move, withReversal: Boolean = false) {
+        this[move.toStack].addAll(this[move.fromStack].takeLast(move.howMany).withReversal(withReversal))
+        repeat(move.howMany) {
+            this[move.fromStack].removeLast()
         }
+    }
+    
+    private fun <T> Iterable<T>.withReversal(reverse: Boolean): Iterable<T> =
+        if (reverse) reversed() else this.toList()  // consistently a copy
+    
+    
+    fun partOne(): List<Char> {
+        moves.forEach { move -> stacks.doMove(move, true) }
         return stacks.allTops()
     }
     
     fun partTwo(): List<Char> {
-        moves.forEach { move ->
-            stacks[move.toStack].addAll(stacks[move.fromStack].takeLast(move.howMany))
-            repeat(move.howMany) {
-                stacks[move.fromStack].removeLast()
-            }
-        }
+        moves.forEach { move -> stacks.doMove(move) }
         return stacks.allTops()
     }
-
     
     private fun parseInput(input: String): Pair<List<String>, List<String>> {
         val (stacksText, movesText) = input.split("\n\n", "\r\n\r\n").map(String::lines)
