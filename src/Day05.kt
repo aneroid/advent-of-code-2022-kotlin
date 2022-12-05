@@ -1,9 +1,8 @@
 data class Move(val howMany: Int, val fromStack: Int, val toStack: Int)
 
-class Day05(input: String) {
-    private val data = parseInput(input)
-    private val stacks = getStacks(data.first.dropLast(1).reversed())
-    private val moves = data.second.mapNotNull(::extractMove)
+class Day05(input: List<List<String>>) {
+    private val stacks = getStacks(input.first().dropLast(1).reversed())
+    private val moves = input.last().mapNotNull(::extractMove)
     
     private fun extractMove(line: String) =
         line.takeIf(String::isNotBlank)?.run {
@@ -54,16 +53,11 @@ class Day05(input: String) {
         moves.forEach { move -> stacks.doMove(move) }
         return stacks.allTops()
     }
-    
-    private fun parseInput(input: String): Pair<List<String>, List<String>> {
-        val (stacksText, movesText) = input.split("\n\n", "\r\n\r\n").map(String::lines)
-        return stacksText to movesText
-    }
 }
 
 fun main() {
-    val testInput = readInputAsString("Day05_test")
-    val input = readInputAsString("Day05")
+    val testInput = readInputBlocks("Day05_test")
+    val input = readInputBlocks("Day05")
     
     // part One
     check(Day05(testInput).partOne() == "CMZ".toList())

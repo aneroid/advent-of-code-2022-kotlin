@@ -18,6 +18,11 @@ fun readInputAsString(name: String) = File(
     "$name.txt"
 ).readText()
 
+fun readInputBlocks(name: String) = File(
+    "..\\_inputs",
+    "$name.txt"
+).readText().split("\n\n", "\r\n\r\n").map(String::lines)
+
 /**
  * Converts string to md5 hash.
  */
