@@ -1,4 +1,4 @@
-class Day04(private val input: List<String>) {
+class Day04(input: List<String>) {
     private val data = parseInput(input)
     
     fun partOne() =
@@ -14,18 +14,20 @@ class Day04(private val input: List<String>) {
     private companion object {
         fun parseInput(input: List<String>) =
             input.map { line ->
-                line.split(",")
-                    .map { it.split("-").map(String::toInt) }
-                    .map { it.first() to it.last() }
+                val (range1, range2) = line.split(",").map { it.toRange() }
+                range1 to range2
             }
+        
+        private fun String.toRange() =
+            substringBefore("-").toInt()..substringAfter("-").toInt()
     }
+    
+    private infix fun IntRange.contains(other: IntRange): Boolean =
+        first <= other.first && last >= other.last
+    
+    private infix fun IntRange.overlapsWith(other: IntRange): Boolean =
+        other.first in this || other.last in this
 }
-
-private infix fun Pair<Int, Int>.contains(other: Pair<Int, Int>): Boolean =
-    first <= other.first && second >= other.second
-
-private infix fun Pair<Int, Int>.overlapsWith(other: Pair<Int, Int>): Boolean =
-    other.first in first..second || other.second in first..second
 
 fun main() {
     val testInput = readInput("Day04_test")
