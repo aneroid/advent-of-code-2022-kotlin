@@ -2,11 +2,11 @@ class Day06(private val input: String) {
     private val data = parseInput(input)
     
     private fun String.indexForUniqSeqLen(size: Int) =
-        withIndex()
-        .windowed(size)
-        .first { chars ->
-            chars.map { it.value }.toSet().size == size
-        }.last().index + 1
+        asSequence()
+            .windowed(size)
+            .map { it.toSet() }
+            .indexOfFirst { it.size == size }
+            .plus(size)
     
     fun partOne(): Int = input.indexForUniqSeqLen(4)
     
