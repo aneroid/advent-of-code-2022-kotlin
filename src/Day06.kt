@@ -1,23 +1,16 @@
 class Day06(private val input: String) {
     private val data = parseInput(input)
     
-    fun partOne(): Int =
-        input.withIndex()
-            .windowed(4)
-            .first { chars ->
-                chars.map { it ->
-                    it.value
-                }.toSet().size == 4
-            }.last().index + 1
+    private fun String.indexForUniqSeqLen(size: Int) =
+        withIndex()
+        .windowed(size)
+        .first { chars ->
+            chars.map { it.value }.toSet().size == size
+        }.last().index + 1
     
-    fun partTwo(): Int =
-        input.withIndex()
-            .windowed(14)
-            .first { chars ->
-                chars.map { it ->
-                    it.value
-                }.toSet().size == 14
-            }.last().index + 1
+    fun partOne(): Int = input.indexForUniqSeqLen(4)
+    
+    fun partTwo(): Int = input.indexForUniqSeqLen(14)
     
     private companion object {
         fun parseInput(input: String) = input
