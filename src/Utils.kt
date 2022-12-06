@@ -2,26 +2,27 @@ import java.io.File
 import java.math.BigInteger
 import java.security.MessageDigest
 
+
+private fun file(name: String) = File(
+    "..\\_inputs",
+    "$name.txt"
+)
+
 /**
  * Reads lines from the given input txt file.
  */
-fun readInput(name: String) = File(
-    "..\\_inputs",
-    "$name.txt"
-).readLines()
+fun readInput(name: String) = file(name).readLines()
 
 /**
  * Reads input as String txt file.
  */
-fun readInputAsString(name: String) = File(
-    "..\\_inputs",
-    "$name.txt"
-).readText()
+fun readInputAsString(name: String) = file(name).readText()
 
-fun readInputBlocks(name: String) = File(
-    "..\\_inputs",
-    "$name.txt"
-).readText().split("\n\n", "\r\n\r\n").map(String::lines)
+fun readInputBlocks(name: String) =
+    file(name)
+        .readText()
+        .split("\n\n", "\r\n\r\n")
+        .map(String::lines)
 
 /**
  * Converts string to md5 hash.
