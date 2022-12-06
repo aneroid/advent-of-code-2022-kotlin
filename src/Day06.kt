@@ -3,9 +3,8 @@ class Day06(private val input: String) {
     
     private fun String.indexForUniqSeqLen(size: Int) =
         asSequence()
-            .windowed(size)
-            .map { it.toSet() }
-            .indexOfFirst { it.size == size }
+            .windowed(size) { it.toSet().size }
+            .indexOfFirst { it == size }
             .plus(size)
     
     fun partOne(): Int = input.indexForUniqSeqLen(4)
