@@ -18,30 +18,24 @@ class Day06(private val input: String) {
 
 fun main() {
     val testInputs = listOf(
-        "mjqjpqmgbljsphdztnvjfqwrcgsmlb" to 7,
-        "bvwbjplbgvbhsrlpgdmjqwftvncz" to 5,
-        "nppdvjthqldpwncqszvftbrmjlhg" to 6,
-        "nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg" to 10,
-        "zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw" to 11,
+        // testString to (partOneResult to partTwoResult)
+        "mjqjpqmgbljsphdztnvjfqwrcgsmlb" to (7 to 19),
+        "bvwbjplbgvbhsrlpgdmjqwftvncz" to (5 to 23),
+        "nppdvjthqldpwncqszvftbrmjlhg" to (6 to 23),
+        "nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg" to (10 to 29),
+        "zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw" to (11 to 26),
     )
     val input = readInput("Day06").first()
     
     println("part One:")
     testInputs.forEach { testInput ->
-        assertThat(Day06(testInput.first).partOne()).isEqualTo(testInput.second)
+        assertThat(Day06(testInput.first).partOne()).isEqualTo(testInput.second.first)
     }
     println("actual: ${Day06(input).partOne()}\n")
     
     println("part Two:")
-    val testInputsPart2 = listOf(
-        "mjqjpqmgbljsphdztnvjfqwrcgsmlb" to 19,
-        "bvwbjplbgvbhsrlpgdmjqwftvncz" to 23,
-        "nppdvjthqldpwncqszvftbrmjlhg" to 23,
-        "nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg" to 29,
-        "zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw" to 26,
-    )
-    testInputsPart2.forEach { testInput ->
-        assertThat(Day06(testInput.first).partTwo()).isEqualTo(testInput.second)
+    testInputs.forEach { testInput ->
+        assertThat(Day06(testInput.first).partTwo()).isEqualTo(testInput.second.second)
     }
     println("actual: ${Day06(input).partTwo()}\n")  // uncomment when ready
 }
