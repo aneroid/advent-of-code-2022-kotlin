@@ -1,57 +1,40 @@
-private typealias Directory = List<Pair<Int, String>>
-private fun Directory.size(): Int = sumOf { it.first }
-
 class Day07(input: List<String>) {
     private val allPaths = parseInput(input)
     
-    private fun parseInput(input: List<String>): Map<List<String>, Directory> =
+    private fun parseInput(input: List<String>): Map<String, Int> =
         buildMap {
             var index = 0
-            var currDir = listOf<String>()
+            var currDir = ""
             while (index < input.size) {
                 val line = input[index++]
                 when (line.take(4)) {
-                    "$ cd" -> {
-                        currDir = changeDir(currDir, line.drop(5))
-                    }
-                    
-                    "$ ls" -> {
-                        val newEntries = listDir(input, index)
-                        this[currDir] = newEntries
-                        index += newEntries.size
-                    }
+                    "$ cd" -> currDir = changedDir(currDir, line.drop(5))
+                    "$ ls" -> index += listDir(input.drop(index))
+                        .map { this[changedDir(currDir, it.second)] = it.first }.size
                     
                     else -> throw IllegalArgumentException("Invalid command: $line")
                 }
             }
         }
     
-    private fun listDir(
-            input: List<String>,
-            index: Int,
-    ): List<Pair<Int, String>> =
+    private fun listDir(input: List<String>): List<Pair<Int, String>> =
         input
-            .drop(index)
             .takeWhile { !it.startsWith("$") }
             .map { (it.substringBefore(" ").toIntOrNull() ?: 0) to it.substringAfter(" ") }
     
-    private fun changeDir(currDir: List<String>, dirName: String): List<String> =
+    private fun changedDir(currDir: String, dirName: String): String =
         when (dirName) {
-            "/" -> listOf("/")
-            ".." -> currDir.dropLast(1)
-            else -> currDir + dirName
+            "/" -> "/"
+            ".." -> currDir.substringBeforeLast("/")
+            else -> if (currDir != "/") "$currDir/$dirName" else "/$dirName"
         }
     
     fun totalSizeOfDir(dirName: String): Int {
-        val dirKey = listOf("/") + (dirName.drop(1).takeIf { it.isNotEmpty() }?.split("/") ?: listOf())
-        return totalSizeOfDir(dirKey)
-    }
-    
-    private fun totalSizeOfDir(dirKey: List<String>) =
-        allPaths
-            .filterKeys { it.take(dirKey.size) == dirKey }
+        return allPaths
+            .filterKeys { it.startsWith("$dirName/") || dirName == "/" }
             .values
-            .sumOf { it.size() }
+            .sum()
+    }
     
     fun partOne(): Int =
         allPaths
