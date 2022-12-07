@@ -1,8 +1,8 @@
-private typealias Directory = MutableList<Pair<Int, String>>
+private typealias Directory = List<Pair<Int, String>>
 private fun Directory.size(): Int = sumOf { it.first }
 
 class Day07(input: List<String>) {
-    private val allFiles = parseInput(input)
+    private val allPaths = parseInput(input)
     
     private fun parseInput(input: List<String>): Map<List<String>, Directory> =
         buildMap {
@@ -13,11 +13,12 @@ class Day07(input: List<String>) {
                 when (line.take(4)) {
                     "$ cd" -> {
                         currDir = changeDir(currDir, line.drop(5))
-                        getOrPut(currDir) { mutableListOf() }
                     }
                     
                     "$ ls" -> {
-                        index += listDir(this, input, index, currDir)
+                        val newEntries = listDir(input, index)
+                        this[currDir] = newEntries
+                        index += newEntries.size
                     }
                     
                     else -> throw IllegalArgumentException("Invalid command: $line")
@@ -26,22 +27,13 @@ class Day07(input: List<String>) {
         }
     
     private fun listDir(
-            allFiles: MutableMap<List<String>, Directory>,
             input: List<String>,
             index: Int,
-            currDir: List<String>,
-    ): Int =
+    ): List<Pair<Int, String>> =
         input
             .drop(index)
             .takeWhile { !it.startsWith("$") }
-            .map { line ->
-                val (size, name) = line.split(" ")
-                if (size == "dir") {
-                    allFiles.getOrPut(currDir + name) { mutableListOf() }
-                } else {
-                    allFiles.getValue(currDir).add(size.toInt() to name)
-                }
-            }.size
+            .map { (it.substringBefore(" ").toIntOrNull() ?: 0) to it.substringAfter(" ") }
     
     private fun changeDir(currDir: List<String>, dirName: String): List<String> =
         when (dirName) {
@@ -56,13 +48,13 @@ class Day07(input: List<String>) {
     }
     
     private fun totalSizeOfDir(dirKey: List<String>) =
-        allFiles
+        allPaths
             .filterKeys { it.take(dirKey.size) == dirKey }
             .values
             .sumOf { it.size() }
     
     fun partOne(): Int =
-        allFiles
+        allPaths
             .map { totalSizeOfDir(it.key) }
             .filter { it <= 100_000 }
             .sum()
@@ -71,7 +63,7 @@ class Day07(input: List<String>) {
         val total = 70_000_000
         val required = 30_000_000
         val unused = total - totalSizeOfDir("/")
-        return allFiles
+        return allPaths
             .map { totalSizeOfDir(it.key) }
             .filter { it + unused >= required }
             .min()
