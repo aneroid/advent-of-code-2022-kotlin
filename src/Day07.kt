@@ -1,72 +1,43 @@
-private data class Directory(
-        val files: MutableList<Pair<Int, String>> = mutableListOf(),
-) {
-    override fun toString(): String = files.map { it.second }.toString()
-    
-    fun size(): Int = files.sumOf { it.first }
-}
-
 class Day07(input: List<String>) {
-    private val allDirs = mutableMapOf(listOf("/") to Directory())
+    private val allPaths = parseInput(input)
     
-    init {
-        parseInput(input)
-    }
-    
-    private fun parseInput(input: List<String>) {
-        var index = 1  // first entry is 'cd /'
-        var currDir = listOf("/")
-        allDirs[currDir] = Directory()
-        while (index < input.size) {
-            val line = input[index++]
-            when (line.take(4)) {
-                "$ cd" -> {
-                    currDir = changeDir(currDir, line.drop(5))
-                    allDirs.getOrPut(currDir) { Directory() }
+    private fun parseInput(input: List<String>): Map<String, Int> =
+        buildMap {
+            var index = 0
+            var currDir = ""
+            while (index < input.size) {
+                val line = input[index++]
+                when (line.take(4)) {
+                    "$ cd" -> currDir = changedDir(currDir, line.drop(5))
+                    "$ ls" -> index += listDir(input.drop(index))
+                        .map { this[changedDir(currDir, it.second)] = it.first }.size
+                    
+                    else -> throw IllegalArgumentException("Invalid command: $line")
                 }
-                
-                "$ ls" -> {
-                    index += listDir(input, index, currDir)
-                }
-                
-                else -> throw IllegalArgumentException("Invalid command: $line")
             }
         }
-    }
     
-    private fun listDir(input: List<String>, index: Int, currDir: List<String>): Int =
+    private fun listDir(input: List<String>): List<Pair<Int, String>> =
         input
-            .drop(index)
             .takeWhile { !it.startsWith("$") }
-            .map { line ->
-                val (size, name) = line.split(" ")
-                if (size == "dir") {
-                    allDirs.getOrPut(currDir + name) { Directory() }
-                } else {
-                    allDirs.getValue(currDir).files.add(size.toInt() to name)
-                }
-            }.size
+            .map { (it.substringBefore(" ").toIntOrNull() ?: 0) to it.substringAfter(" ") }
     
-    private fun changeDir(currDir: List<String>, dirName: String): List<String> =
+    private fun changedDir(currDir: String, dirName: String): String =
         when (dirName) {
-            "/" -> listOf("/")
-            ".." -> currDir.dropLast(1)
-            else -> currDir + dirName
+            "/" -> "/"
+            ".." -> currDir.substringBeforeLast("/")
+            else -> if (currDir != "/") "$currDir/$dirName" else "/$dirName"
         }
     
     fun totalSizeOfDir(dirName: String): Int {
-        val dirKey = listOf("/") + (dirName.drop(1).takeIf { it.isNotEmpty() }?.split("/") ?: listOf())
-        return totalSizeOfDir(dirKey)
+        return allPaths
+            .filterKeys { it.startsWith("$dirName/") || dirName == "/" }
+            .values
+            .sum()
     }
     
-    private fun totalSizeOfDir(dirKey: List<String>) =
-        allDirs
-            .filterKeys { it.take(dirKey.size) == dirKey }
-            .values
-            .sumOf { it.size() }
-    
     fun partOne(): Int =
-        allDirs
+        allPaths
             .map { totalSizeOfDir(it.key) }
             .filter { it <= 100_000 }
             .sum()
@@ -75,7 +46,7 @@ class Day07(input: List<String>) {
         val total = 70_000_000
         val required = 30_000_000
         val unused = total - totalSizeOfDir("/")
-        return allDirs
+        return allPaths
             .map { totalSizeOfDir(it.key) }
             .filter { it + unused >= required }
             .min()
