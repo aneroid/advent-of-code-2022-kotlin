@@ -3,19 +3,23 @@ class Day08(private val input: List<String>) {
     
     private fun isVisible(x: Int, y: Int, height: Int): Boolean =
         requiredIndices(x, y)
-            // .also { println("for $x $y ($height)") }
             .any { pairs ->
-            // println("  pairs: $pairs")
-            pairs.all { (cx, cy) ->
-                forest[cy][cx] < height
+                pairs.all { (cx, cy) -> forest[cy][cx] < height }
             }
-        }
+    
+    private fun scenicScore(x: Int, y: Int, height: Int): Int =
+        requiredIndices(x, y)
+            .map { pairs ->
+                val treesInPath = pairs.map { (cx, cy) -> forest[cy][cx] }
+                val shorter = treesInPath.takeWhile { it < height }
+                shorter.size + if (shorter.indices.last < treesInPath.indices.last) 1 else 0
+            }.reduce { acc, i -> acc * i }
     
     private fun requiredIndices(x: Int, y: Int): Sequence<List<Pair<Int, Int>>> {
         return sequenceOf(
-            (0 until x).map { it to y },
+            (0 until x).reversed().map { it to y },
             (x + 1 until forest[0].size).map { it to y },
-            (0 until y).map { x to it },
+            (0 until y).reversed().map { x to it },
             (y + 1 until forest.size).map { x to it },
         )
     }
@@ -27,18 +31,19 @@ class Day08(private val input: List<String>) {
         x == 0 || y == 0 || x == forest[0].indices.last || y == forest.indices.last
     
     
-    fun partOne(): Int {
-        return treesVisibleAtEdge() + forest.flatMapIndexed { y: Int, rows: List<Int> ->
+    fun partOne(): Int =
+        treesVisibleAtEdge() + forest.flatMapIndexed { y: Int, rows: List<Int> ->
             rows.mapIndexed { x: Int, height: Int ->
                 !isAtEdge(x, y) && isVisible(x, y, height)
-                // .also { println("visible: $x $y ($height) [$it]") }
             }
         }.count { it }
-    }
     
-    fun partTwo(): Int {
-        return 0
-    }
+    fun partTwo(): Int =
+        forest.flatMapIndexed { y: Int, rows: List<Int> ->
+            rows.mapIndexed { x: Int, height: Int ->
+                if (isAtEdge(x, y)) 0 else scenicScore(x, y, height)
+            }
+        }.max()
     
     private companion object {
         fun parseInput(input: List<String>) = input
@@ -56,6 +61,6 @@ fun main() {
     
     println("part Two:")
     // uncomment when ready
-    // assertThat(Day08(testInput).partTwo()).isEqualTo(1)
-    // println("actual: ${Day08(input).partTwo()}\n")
+    assertThat(Day08(testInput).partTwo()).isEqualTo(8)
+    println("actual: ${Day08(input).partTwo()}\n")
 }
