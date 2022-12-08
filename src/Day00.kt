@@ -23,6 +23,7 @@ fun main() {
     println("actual: ${Day00(input).partOne()}\n")
     
     println("part Two:")
-    // assertThat(Day00(testInput).partTwo()).isEqualTo(1)  // uncomment when ready
-    // println("actual: ${Day00(input).partTwo()}\n")  // uncomment when ready
+    // uncomment when ready
+    // assertThat(Day00(testInput).partTwo()).isEqualTo(1)
+    // println("actual: ${Day00(input).partTwo()}\n")
 }
