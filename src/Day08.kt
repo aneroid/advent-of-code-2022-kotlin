@@ -12,7 +12,7 @@ class Day08(private val input: List<String>) {
             .map { pairs ->
                 val treesInPath = pairs.map { (cx, cy) -> forest[cy][cx] }
                 val shorter = treesInPath.takeWhile { it < height }
-                shorter.size + if (shorter.indices.last < treesInPath.indices.last) 1 else 0
+                shorter.size + if (shorter.size < treesInPath.size) 1 else 0
             }.reduce { acc, i -> acc * i }
     
     private fun requiredIndices(x: Int, y: Int): Sequence<List<Pair<Int, Int>>> {
