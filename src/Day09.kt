@@ -79,6 +79,10 @@ fun main() {
     assertThat(Day09(testInputP2).partTwo()).isEqualTo(36)
     println("actual: ${Day09(input).partTwo()}\n")
     
+    // 100 iterations of the testInput in part2 with 10 knots
+    val testInputP2_100 = testInputP2.flatMap { testInputP2 }
+    println("actual x100: ${Day09(testInputP2_100).partTwo()}")
+    
     // using 100 knots, because... why not?
     println("100 knots test  : ${Day09(testInput).genericSolver(99)}")
     println("100 knots testP2: ${Day09(testInputP2).genericSolver(99)}")
