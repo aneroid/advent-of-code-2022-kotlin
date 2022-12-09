@@ -35,6 +35,11 @@ class Day09(private val input: List<String>) {
             else -> this
         }
     
+    private fun List<Point>.follow(actualHead: Point): List<Point> =
+        runningFold(actualHead) { nextHead, point ->
+            point.follow(nextHead)
+        }.drop(1)
+    
     fun partOne(): Int =
         buildSet {
             steps.fold(Point(0, 0) to Point(0, 0)) { (stepHead, stepTail), step ->
@@ -46,9 +51,17 @@ class Day09(private val input: List<String>) {
             }
         }.size
     
-    fun partTwo(): Int {
-        return 0
-    }
+    // possible obvious refactoring: `Point to List(size) { Point }` for both parts
+    fun partTwo(): Int =
+        buildSet {
+            steps.fold(Point(0, 0) to List(9) { Point(0, 0) }) { (stepHead, stepKnots), step ->
+                generateSequence(stepHead to stepKnots) { (head, tails) ->
+                    head.move(step.first)
+                        .let { it to tails.follow(it) }
+                        .also { add(it.second.last()) }
+                }.drop(1).take(step.second).last()
+            }
+        }.size
     
     private companion object {
         fun parseInput(input: List<String>) =
@@ -59,6 +72,7 @@ class Day09(private val input: List<String>) {
 
 fun main() {
     val testInput = readInput("Day09_test")
+    val testInputP2 = readInput("Day09_test_p2")
     val input = readInput("Day09")
     
     println("part One:")
@@ -67,6 +81,7 @@ fun main() {
     
     println("part Two:")
     // uncomment when ready
-    // assertThat(Day09(testInput).partTwo()).isEqualTo(1)
-    // println("actual: ${Day09(input).partTwo()}\n")
+    assertThat(Day09(testInput).partTwo()).isEqualTo(1)
+    assertThat(Day09(testInputP2).partTwo()).isEqualTo(36)
+    println("actual: ${Day09(input).partTwo()}\n")
 }
