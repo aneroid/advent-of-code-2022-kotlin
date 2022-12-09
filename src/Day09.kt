@@ -2,11 +2,6 @@ import kotlin.math.absoluteValue
 import kotlin.math.sign
 
 private data class Point(val x: Int, val y: Int) {
-    constructor(strCoords: String) : this(
-        x = strCoords.split(',').first().toInt(),
-        y = strCoords.split(',').last().toInt()
-    )
-    
     override fun toString() = "P($x, $y)"
 }
 
@@ -25,15 +20,10 @@ class Day09(private val input: List<String>) {
         }.toPoint()
     
     private fun Point.follow(head: Point): Point =
-        when {
-            head == this -> this
-            head.x == x && (head.y - y).absoluteValue > 1 -> Point(x, y + (head.y - y).sign)
-            head.y == y && (head.x - x).absoluteValue > 1 -> Point(x + (head.x - x).sign, y)
-            (head.x - x).absoluteValue > 1 || (head.y - y).absoluteValue > 1 ->
-                Point(x + (head.x - x).sign, y + (head.y - y).sign)
-            
-            else -> this
-        }
+        if ((head.x - x).absoluteValue > 1 || (head.y - y).absoluteValue > 1)
+            Point(x + (head.x - x).sign, y + (head.y - y).sign)
+        else
+            this
     
     private fun List<Point>.follow(actualHead: Point): List<Point> =
         runningFold(actualHead) { nextHead, point ->
@@ -51,10 +41,9 @@ class Day09(private val input: List<String>) {
             }
         }.size
     
-    // possible obvious refactoring: `Point to List(size) { Point }` for both parts
-    fun partTwo(): Int =
+    fun genericSolver(tailKnots: Int): Int =
         buildSet {
-            steps.fold(Point(0, 0) to List(9) { Point(0, 0) }) { (stepHead, stepKnots), step ->
+            steps.fold(Point(0, 0) to List(tailKnots) { Point(0, 0) }) { (stepHead, stepKnots), step ->
                 generateSequence(stepHead to stepKnots) { (head, tails) ->
                     head.move(step.first)
                         .let { it to tails.follow(it) }
@@ -62,6 +51,8 @@ class Day09(private val input: List<String>) {
                 }.drop(1).take(step.second).last()
             }
         }.size
+    
+    fun partTwo() = genericSolver(9)
     
     private companion object {
         fun parseInput(input: List<String>) =
@@ -78,10 +69,20 @@ fun main() {
     println("part One:")
     assertThat(Day09(testInput).partOne()).isEqualTo(13)
     println("actual: ${Day09(input).partOne()}\n")
+    // partOne with generic solver
+    assertThat(Day09(testInput).genericSolver(1)).isEqualTo(13)
+    println("original: ${Day09(input).genericSolver(1)}\n")
     
     println("part Two:")
     // uncomment when ready
     assertThat(Day09(testInput).partTwo()).isEqualTo(1)
     assertThat(Day09(testInputP2).partTwo()).isEqualTo(36)
     println("actual: ${Day09(input).partTwo()}\n")
+    
+    // using 100 knots, because... why not?
+    println("100 knots test  : ${Day09(testInput).genericSolver(99)}")
+    println("100 knots testP2: ${Day09(testInputP2).genericSolver(99)}")
+    println("100 knots actual: ${Day09(input).genericSolver(99)}")
+    // using 0 tail knots, doesn't work because I don't check for empty knotsList
+    // assertThat(Day09(testInput).genericSolver(0)).isEqualTo(20)  // 20 unique Head positions in example
 }
