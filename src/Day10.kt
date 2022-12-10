@@ -20,9 +20,6 @@ private class CPU(var accX: Int = 1) {
     val pixels = mutableListOf(mutableListOf<Char>())
     val spriteSize = 3
     
-    private fun Int.isCyclesOfInterest() = (this - 20) % 40 == 0
-    
-    @OptIn(ExperimentalStdlibApi::class)
     private fun processCycle() {
         if (cycle in cyclesOfInterest) {
             // println("    *** processCycle: $cycle")
@@ -75,7 +72,13 @@ class Day10(input: List<String>) {
     
     fun partTwo(): List<String> {
         val cpu = processProgram()
-        println(cpu.pixels.joinToString("\n") { it.joinToString("").replace(".", " ") })
+        println(cpu.pixels.joinToString("\n") {
+            it.joinToString("")
+                // .replace(".", " ")
+                // .replace("#", "█")
+                .replace(".", "⚫️️")
+                .replace("#", "⚪")
+        })
         return cpu.pixels.map { it.joinToString("") }
     }
 }
