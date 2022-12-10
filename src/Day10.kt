@@ -16,12 +16,24 @@ private class CPU(var accX: Int = 1) {
     private val cyclesOfInterest = 20..220 step 40
     val signalStrengths = mutableListOf<Int>()
     
+    // variables added for part 2
+    val pixels = mutableListOf(mutableListOf<Char>())
+    val spriteSize = 3
+    
     private fun Int.isCyclesOfInterest() = (this - 20) % 40 == 0
     
+    @OptIn(ExperimentalStdlibApi::class)
     private fun processCycle() {
         if (cycle in cyclesOfInterest) {
             // println("    *** processCycle: $cycle")
             signalStrengths += signalStrength()
+        }
+        // drawSprite
+        val crtPos = (cycle - 1) % 40
+        val spritePos = accX - 1
+        pixels.last().add(if (crtPos in spritePos until spritePos + spriteSize) '#' else '.')
+        if (cycle % 40 == 0) {
+            pixels.add(mutableListOf())
         }
     }
     
@@ -47,20 +59,25 @@ class Day10(input: List<String>) {
     
     private fun String.toOP() = Operation.fromString(this)
     
-    fun partOne(): Int {
-        val cpu = CPU()
-        program.forEach { (instr, arg) ->
-            // println("${instr.name} $arg")
-            cpu.execute(instr, arg)
+    private fun processProgram(): CPU =
+        CPU().apply {
+            program.forEach { (instr, arg) ->
+                // println("${instr.name} $arg")
+                execute(instr, arg)
+            }
         }
+    
+    fun partOne(): Int {
+        val cpu = processProgram()
         println("signal strengths: ${cpu.signalStrengths}")
         return cpu.signalStrengths.sum()
     }
     
-    fun partTwo(): Int {
-        return 0
+    fun partTwo(): List<String> {
+        val cpu = processProgram()
+        println(cpu.pixels.joinToString("\n") { it.joinToString("").replace(".", " ") })
+        return cpu.pixels.map { it.joinToString("") }
     }
-    
 }
 
 fun main() {
@@ -73,6 +90,14 @@ fun main() {
     
     println("part Two:")
     // uncomment when ready
-    // assertThat(Day10(testInput).partTwo()).isEqualTo(1)
-    // println("actual: ${Day10(input).partTwo()}\n")
+    val expectedOutputPart2 = """
+        ##..##..##..##..##..##..##..##..##..##..
+        ###...###...###...###...###...###...###.
+        ####....####....####....####....####....
+        #####.....#####.....#####.....#####.....
+        ######......######......######......####
+        #######.......#######.......#######.....
+    """.trimIndent().lines()
+    assertThat(Day10(testInput).partTwo().take(6)).isEqualTo(expectedOutputPart2)
+    println("actual: ${Day10(input).partTwo()}\n")
 }
