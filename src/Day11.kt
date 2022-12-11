@@ -19,7 +19,7 @@ class Day11(input: List<String>) {
     }
     
     private fun Monkey.see() =
-        buildList<Long> {
+        buildList {
             while (itemLevels.isNotEmpty()) {
                 inspected++
                 itemLevels.removeFirst().let(changeLevel).let(worryReducer).also(::add)
@@ -58,8 +58,7 @@ class Day11(input: List<String>) {
                 val throwTrue: Int,
                 val throwFalse: Int,
                 var inspected: Int = 0,
-        ) {
-        }
+        )
         
         fun parseInput(input: List<String>) =
             input.chunked(7).map { lines ->
